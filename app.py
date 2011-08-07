@@ -7,6 +7,7 @@ import hashlib
 import time
 from datetime import datetime
 import json
+import logging
 
 sys.path.append("lib")
 import tornado.httpserver
@@ -18,11 +19,14 @@ import pymongo
 from pymongo import Connection
 from pymongo import json_util
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
 connection = Connection('localhost', 27017)
 db = connection.its_almost
 timers = db['timers']
 
 class ItsAlmost(tornado.web.RequestHandler):
+  
   def get(self,id):
     timer = timers.find_one({"id": id,'expires':{'$gte':datetime.now()}})
     out = []
@@ -30,7 +34,7 @@ class ItsAlmost(tornado.web.RequestHandler):
       timer[u'expires'] = (time.mktime(timer[u'expires'].timetuple()) * 1000)
       out.append(timer)
     out = json.dumps(out,default=json_util.default)
-    print "----FETCHED " + str(id) + " : " + str(out)
+    logging.info("----FETCHED " + str(id) + " : " + str(out))
     return self.write(out);
     
   def post(self,id):
@@ -46,7 +50,7 @@ class ItsAlmost(tornado.web.RequestHandler):
       timer[u'expires'] = (time.mktime(timer[u'expires'].timetuple()) * 1000)
       out.append(timer)
     out = json.dumps(out,default=json_util.default)
-    print "++++CREATED " + str(id) + " : " + str(out)
+    logging.info("++++CREATED " + str(id) + " : " + str(out))
     return self.write(out);
 
 application = tornado.web.Application([
