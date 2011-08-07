@@ -25,10 +25,13 @@ timers = db['timers']
 class ItsAlmost(tornado.web.RequestHandler):
   def get(self,id):
     timer = timers.find_one({"id": id,'expires':{'$gte':datetime.now()}})
+    out = []
     if timer is not None:
       timer[u'expires'] = (time.mktime(timer[u'expires'].timetuple()) * 1000)
-      return self.write(json.dumps([timer],default=json_util.default));
-    return self.write(json.dumps([],default=json_util.default));
+      out.append(timer)
+    out = json.dumps(out,default=json_util.default)
+    print "----FETCHED " + str(id) + " : " + str(out)
+    return self.write(out);
     
   def post(self,id):
     timer_id = timers.insert({
@@ -38,10 +41,13 @@ class ItsAlmost(tornado.web.RequestHandler):
     });
     
     timer = timers.find_one({"_id": timer_id})
+    out = []
     if timer is not None:
       timer[u'expires'] = (time.mktime(timer[u'expires'].timetuple()) * 1000)
-      return self.write(json.dumps([timer],default=json_util.default));
-    return self.write(json.dumps([],default=json_util.default));
+      out.append(timer)
+    out = json.dumps(out,default=json_util.default)
+    print "++++CREATED " + str(id) + " : " + str(out)
+    return self.write(out);
 
 application = tornado.web.Application([
   (r"/timer/(.*)", ItsAlmost)
