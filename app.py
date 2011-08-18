@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2.7
 
 import sys
 import os
@@ -8,8 +8,9 @@ import time
 from datetime import datetime
 import json
 import logging
+import argparse
 
-sys.path.append("lib")
+sys.path.append("./lib")
 import tornado.httpserver
 import tornado.httpclient
 import tornado.ioloop
@@ -18,6 +19,10 @@ import tornado.web
 import pymongo
 from pymongo import Connection
 from pymongo import json_util
+
+parser = argparse.ArgumentParser(description='itsAlmo.st Server.')
+parser.add_argument('--port', dest='port', help='port for server to run on', default=8000)
+args = parser.parse_args()
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -58,5 +63,5 @@ application = tornado.web.Application([
 ])
 
 if __name__ == "__main__":
-  application.listen(9000)
+  application.listen(args.port)
   tornado.ioloop.IOLoop.instance().start()
