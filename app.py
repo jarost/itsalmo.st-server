@@ -9,7 +9,7 @@ from datetime import datetime
 import json
 import logging
 
-sys.path.append("lib")
+sys.path.append("./lib")
 import tornado.httpserver
 import tornado.httpclient
 import tornado.ioloop
