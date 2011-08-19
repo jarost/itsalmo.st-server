@@ -51,6 +51,7 @@ class ItsAlmost(tornado.web.RequestHandler):
     timer = timers.find_one({"id": id,'expires':{'$gte':datetime.now()}})
     if timer is not None:
         raise tornado.web.HTTPError(400)
+    print (float(self.get_argument('expires'))/1000)
     timer_id = timers.insert({
       'id':id,
       'name':self.get_argument('name'),
