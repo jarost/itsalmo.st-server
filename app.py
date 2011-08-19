@@ -58,6 +58,8 @@ connection = Connection('localhost', 27017)
 db = connection.its_almost
 timers = db['timers']
 
+#db.timers.find({expires: { $gte : new Date()}}).sort({expires:1}).forEach( function(d){ print(d.id + ': ' + d.name + '  ' + d.expires) } )
+
 class ItsAlmost(tornado.web.RequestHandler):
   
   def get(self,id):
