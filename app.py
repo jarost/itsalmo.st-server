@@ -1,5 +1,33 @@
 #! /usr/bin/env python2.7
 
+#            _____                    _____          
+#           /\    \                  /\    \         
+#          /::\    \                /::\    \        
+#          \:::\    \              /::::\    \       
+#           \:::\    \            /::::::\    \      
+#            \:::\    \          /:::/\:::\    \     
+#             \:::\    \        /:::/  \:::\    \    
+#             /::::\    \      /:::/    \:::\    \   
+#            /::::::\    \    /:::/    / \:::\    \  
+#           /:::/\:::\    \  /:::/    /   \:::\    \ 
+#          /:::/  \:::\____\/:::/____/     \:::\____\
+#         /:::/    \::/    /\:::\    \      \::/    /
+#        /:::/    / \/____/  \:::\    \      \/____/ 
+#       /:::/    /            \:::\    \             
+#      /:::/    /              \:::\    \            
+#      \::/    /                \:::\    \           
+#       \/____/                  \:::\    \          
+#                                 \:::\    \         
+#                                  \:::\____\        
+#                                   \::/    /        
+#                                    \/____/         
+#                                   TYPE/CODE        
+#                               From 2010 till ∞     
+#      
+#             It's Almost...
+#              Version 1.0
+
+
 import sys
 import os
 import datetime
@@ -33,9 +61,13 @@ timers = db['timers']
 class ItsAlmost(tornado.web.RequestHandler):
   
   def get(self,id):
-    timer = timers.find_one({"id": id,'expires':{'$gte':datetime.now()}})
     out = []
+    #timer = timers.find_one({"id": id,'expires':{'$gte':datetime.now()}}, sort={'expires':-1})
+    timer = timers.find_one({"id": id}, sort=[('expires',-1)])
     if timer is not None:
+      timer[u'expired'] = False
+      if datetime.now() > timer[u'expires']:
+        timer[u'expired'] = True
       timer[u'expires'] = (time.mktime(timer[u'expires'].timetuple()) * 1000)
       out.append(timer)
     out = json.dumps(out,default=json_util.default)
@@ -43,17 +75,22 @@ class ItsAlmost(tornado.web.RequestHandler):
     return self.write(out);
     
   def post(self,id):
+    out = []
+    timer = timers.find_one({"id": id,'expires':{'$gte':datetime.now()}})
+    if timer is not None:
+        raise tornado.web.HTTPError(400)
+    print (float(self.get_argument('expires'))/1000)
     timer_id = timers.insert({
       'id':id,
       'name':self.get_argument('name'),
       'expires':datetime.fromtimestamp(float(self.get_argument('expires'))/1000)
     });
     
-    timer = timers.find_one({"_id": timer_id})
-    out = []
-    if timer is not None:
-      timer[u'expires'] = (time.mktime(timer[u'expires'].timetuple()) * 1000)
-      out.append(timer)
+    new_timer = timers.find_one({"_id": timer_id})
+    if new_timer is not None:
+      new_timer[u'expired'] = False
+      new_timer[u'expires'] = (time.mktime(new_timer[u'expires'].timetuple()) * 1000)
+      out.append(new_timer)
     out = json.dumps(out,default=json_util.default)
     logging.info("++++CREATED " + str(id) + " : " + str(out))
     return self.write(out);
