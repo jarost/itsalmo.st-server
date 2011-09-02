@@ -1,4 +1,5 @@
 #! /usr/bin/env python2.7
+# -*- coding: utf-8 -*-
 
 #            _____                    _____          
 #           /\    \                  /\    \         
@@ -22,7 +23,7 @@
 #                                   \::/    /        
 #                                    \/____/         
 #                                   TYPE/CODE        
-#                               From 2010 till ∞     
+#                               From 2010 till infinity     
 #      
 #             It's Almost...
 #              Version 1.0
