@@ -68,7 +68,7 @@ class ItsAlmost(tornado.web.RequestHandler):
     timer = timers.find_one({"id": id}, sort=[('expires',-1)])
     if timer is not None:
       timer[u'expired'] = False
-      if datetime.now() > timer[u'expires']:
+      if datetime.now() >= timer[u'expires']:
         timer[u'expired'] = True
       timer[u'expires'] = (time.mktime(timer[u'expires'].timetuple()) * 1000)
       out.append(timer)
